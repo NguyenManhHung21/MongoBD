@@ -1,13 +1,14 @@
 const { ObjectId } = require('mongodb');
 const { initMongoDb } = require('../../db')
 
-
+// pagination
 const getBooks = async (req, res) => {
     try {
         const db = await initMongoDb();
-
+        const {page} = req.query || 1;
+        const booksPerPage = 3;
         const books = [];
-        await db.books.find().sort({ author: 1 }).forEach(book => {
+        await db.books.find().sort({ author: 1 }).skip((+page - 1) * booksPerPage).limit(booksPerPage).forEach(book => {
             books.push(book)
         });
         res.status(200).json(books);
